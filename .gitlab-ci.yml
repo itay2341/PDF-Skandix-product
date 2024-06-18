@@ -1,0 +1,18 @@
+# image: python:3.9
+# image: python:3.11
+
+stages:
+  - deploy
+
+deploy:
+  image: google/cloud-sdk:alpine
+  stage: deploy
+  when: manual
+  script:
+    - echo "Deploying to app engine"
+    - echo $SERVICE_ACCOUNT_PRD > /tmp/$CI_PIPELINE_ID.json
+    - gcloud auth activate-service-account --key-file=/tmp/$CI_PIPELINE_ID.json
+    - gcloud config set project $PROJECT_ID_PRD
+    - gcloud app deploy app.yaml
+  only:
+    - main
